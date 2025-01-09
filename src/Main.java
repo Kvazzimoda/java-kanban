@@ -1,8 +1,5 @@
 import managementtool.TaskManager;
-import typesoftasks.Task;
-import typesoftasks.Epic;
-import typesoftasks.SubTask;
-import typesoftasks.TaskStatus;
+import typesoftasks.*;
 
 public class Main {
 
@@ -48,10 +45,8 @@ public class Main {
                 TaskStatus.DONE, epic2.getId());
 
 
-
-
         System.out.println("--------------+++++++++++++++-----------------");
-        taskManager.updateTask(task1,task1Update); // обновление задачи
+        taskManager.updateTask(task1, task1Update); // обновление задачи
 
         taskManager.updateSubTask(subTask1, subTask1Update); // Обновление подзадачи
         taskManager.updateSubTask(subTask3, subTask3Update);
@@ -67,7 +62,7 @@ public class Main {
 
         System.out.println("--------------------------------------------");
         SubTask subTask2Update = new SubTask("Обновили подзадачу 2", "Внесли правки, поправили кое-что",
-              TaskStatus.DONE, epic1.getId());
+                TaskStatus.DONE, epic1.getId());
         taskManager.updateSubTask(subTask2, subTask2Update);
         System.out.println(taskManager.getSubtaskByEpic(epic1));
         System.out.println(taskManager.getEpics());

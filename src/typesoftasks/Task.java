@@ -22,11 +22,11 @@ public class Task {
         this.id = id;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String title) {// добавлен
         this.title = title;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(String description) { //добавлен
         this.description = description;
     }
 
@@ -34,7 +34,7 @@ public class Task {
         return status;
     }
 
-    public void setStatus(TaskStatus status) { // сеттер был изначально :)
+    public void setStatus(TaskStatus status) { // сеттер на статус был изначально :)
         this.status = status;
     }
 
