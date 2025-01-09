@@ -1,4 +1,4 @@
-package typesOfTasks;
+package typesoftasks;
 
 public enum TaskStatus {
     NEW,

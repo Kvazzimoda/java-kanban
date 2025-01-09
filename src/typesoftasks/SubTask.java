@@ -1,4 +1,4 @@
-package typesOfTasks;
+package typesoftasks;
 
 public class SubTask extends Task {
     private final int epicId; // ID эпика, к которому относится подзадача

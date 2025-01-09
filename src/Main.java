@@ -1,8 +1,8 @@
-import managementTool.TaskManager;
-import typesOfTasks.Task;
-import typesOfTasks.Epic;
-import typesOfTasks.SubTask;
-import typesOfTasks.TaskStatus;
+import managementtool.TaskManager;
+import typesoftasks.Task;
+import typesoftasks.Epic;
+import typesoftasks.SubTask;
+import typesoftasks.TaskStatus;
 
 public class Main {
 
@@ -28,46 +28,64 @@ public class Main {
         SubTask subTask2 = new SubTask("Подзадача 2", "Описание подзадачи 2",
                 TaskStatus.NEW, epic1.getId());
         SubTask subTask3 = new SubTask("Подзадача 3", "Описание подзадачи 3",
-                TaskStatus.NEW, epic1.getId());
+                TaskStatus.NEW, epic2.getId());
         SubTask subTask4 = new SubTask("Подзадача 4", "Описание подзадачи 4",
-                TaskStatus.NEW, epic1.getId());
+                TaskStatus.NEW, epic2.getId());
         taskManager.addSubtask(subTask1);
         taskManager.addSubtask(subTask2);
         taskManager.addSubtask(subTask3);
         taskManager.addSubtask(subTask4);
 
-        epic1.addSubtask(subTask1);
-        epic1.addSubtask(subTask2);
-        epic2.addSubtask(subTask3);
-        epic2.addSubtask(subTask4);
 
         System.out.println(taskManager.getSubtasks());
+        System.out.println("Epic после добавления SubTask: " + taskManager.getEpics());
 
-        Task task1Update = new Task("Обновление задачи 1", "Добавление новой инфы в задачу",
+        Task task1Update = new Task("Обновление задачи 1", "Добавили новую инфу в задачу",
                 TaskStatus.DONE);
         SubTask subTask1Update = new SubTask("Обновление подзадачи 1", "Внесли изменения в подзадачу 1",
                 TaskStatus.DONE, epic1.getId());
-        SubTask subTask2Update = new SubTask("Обновление подзадачи 2", "Внесли изменения в подзадачу 2",
+        SubTask subTask3Update = new SubTask("Обновление подзадачи 3", "Внесли изменения в подзадачу 3",
                 TaskStatus.DONE, epic2.getId());
 
 
-         // удаление задачи по ID
 
-        System.out.println("-------------------------------------------");
+
+        System.out.println("--------------+++++++++++++++-----------------");
         taskManager.updateTask(task1,task1Update); // обновление задачи
 
         taskManager.updateSubTask(subTask1, subTask1Update); // Обновление подзадачи
-        taskManager.updateSubTask(subTask2, subTask2Update);
+        taskManager.updateSubTask(subTask3, subTask3Update);
 
+        System.out.println(taskManager.getEpics());
+
+        taskManager.updateEpic(epic1, "Обнова 1 Эпика", "Добавили новые плюшки, обновили подзадачу"
+        );
         System.out.println(taskManager.getTasks());
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getSubtasks());
 
-        System.out.println("--------------------------------------------");
-        System.out.println(taskManager.getSubtaskByEpic(epic1));
 
+        System.out.println("--------------------------------------------");
+        SubTask subTask2Update = new SubTask("Обновили подзадачу 2", "Внесли правки, поправили кое-что",
+              TaskStatus.DONE, epic1.getId());
+        taskManager.updateSubTask(subTask2, subTask2Update);
+        System.out.println(taskManager.getSubtaskByEpic(epic1));
+        System.out.println(taskManager.getEpics());
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println(taskManager.getTaskById(2));
+        System.out.println(taskManager.getEpicById(4));
+        System.out.println(taskManager.getSubTaskById(7));
         taskManager.deleteTaskById(2);
+        taskManager.deleteEpicById(3);
+        taskManager.deleteSubTaskById(4);
+
+        System.out.println("============================================");
         System.out.println(taskManager.getTasks());
+        System.out.println(taskManager.getEpics());
+        System.out.println(taskManager.getSubtasks());
+        System.out.println("============================================");
+        taskManager.deleteEpic();
+        System.out.println(taskManager.getEpics());
+
     }
 }

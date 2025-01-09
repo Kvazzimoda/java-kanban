@@ -1,12 +1,12 @@
-package typesOfTasks;
+package typesoftasks;
 
 import java.util.Objects;
 
 public class Task {
-    private final String title;
-    private final String description;
+    private String title;
+    private String description;
     private int id;
-    TaskStatus status;
+    private TaskStatus status; // исправил модификатор доступа
 
     public Task(String title, String description, TaskStatus status) {
         this.title = title;
@@ -14,20 +14,27 @@ public class Task {
         this.status = status;
     }
 
-
     public int getId() {
         return id;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setStatus(TaskStatus status) {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) { // сеттер был изначально :)
         this.status = status;
     }
 
