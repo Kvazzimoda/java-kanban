@@ -1,10 +1,16 @@
-import managementtool.TaskManager;
-import typesoftasks.*;
+
+import data.*;
+import manager.InMemoryTaskManager;
+import manager.Managers;
+import manager.TaskManager;
+
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+
+        TaskManager taskManager = Managers.getDefault();
 
         Task task1 = new Task("Задача 1", "Заголовок задачи 1", TaskStatus.NEW);
         Task task2 = new Task("Задача 2", "Заголовок задачи 2", TaskStatus.NEW);
@@ -59,8 +65,9 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getSubtasks());
 
-
         System.out.println("--------------------------------------------");
+
+        System.out.println("------------------------------------------++");
         SubTask subTask2Update = new SubTask("Обновили подзадачу 2", "Внесли правки, поправили кое-что",
                 TaskStatus.DONE, epic1.getId());
         taskManager.updateSubTask(subTask2, subTask2Update);
@@ -70,17 +77,28 @@ public class Main {
         System.out.println(taskManager.getTaskById(2));
         System.out.println(taskManager.getEpicById(4));
         System.out.println(taskManager.getSubTaskById(7));
-        taskManager.deleteTaskById(2);
         taskManager.deleteEpicById(3);
         taskManager.deleteSubTaskById(4);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(1);
+        taskManager.getTaskById(1);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(2);
+
+        taskManager.printAllTasks(taskManager);
 
         System.out.println("============================================");
         System.out.println(taskManager.getTasks());
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getSubtasks());
         System.out.println("============================================");
-        taskManager.deleteEpic();
-        System.out.println(taskManager.getEpics());
+
+
+
+        taskManager.printAllTasks(taskManager);
 
     }
 }

@@ -1,4 +1,4 @@
-package typesoftasks;
+package data;
 
 import java.util.Objects;
 
@@ -14,8 +14,27 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    public Task(String title, String description, int id) {
+        this.title = title;
+        this.description = description;
+        this.id = id;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setId(int id) {
@@ -38,12 +57,14 @@ public class Task {
         this.status = status;
     }
 
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Task task = (Task) object;
-        return Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
+        return id == task.id && Objects.equals(title, task.title) && Objects.equals(description, task.description)
+                && status == task.status;
     }
 
     @Override

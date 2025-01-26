@@ -1,4 +1,4 @@
-package typesoftasks; // поменял название
+package data; // поменял название
 
 public enum TaskStatus {
     NEW,
