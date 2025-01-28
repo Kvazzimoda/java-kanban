@@ -10,68 +10,68 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class InMemoryTaskManagerTest {
 
-        private TaskManager taskManager;
+    private TaskManager taskManager;
 
-        @BeforeEach
-        public void setUp() {
-            taskManager = new InMemoryTaskManager(); // Создаём новый экземпляр для каждого теста
-        }
+    @BeforeEach
+    public void setUp() {
+        taskManager = new InMemoryTaskManager(); // Создаём новый экземпляр для каждого теста
+    }
 
-        @Test
-        public void shouldAddAndRetrieveTaskById() {
+    @Test
+    public void shouldAddAndRetrieveTaskById() {
 
-            Task task = new Task("Task 1", "Description 1");
-            taskManager.addTask(task);
+        Task task = new Task("Task 1", "Description 1");
+        taskManager.addTask(task);
 
-            Task retrievedTask = taskManager.getTaskById(task.getId());
+        Task retrievedTask = taskManager.getTaskById(task.getId());
 
-            assertNotNull(retrievedTask, "Задача не должна быть нулевой");
-            assertEquals(task, retrievedTask, "Извлеченная задача должна соответствовать добавленной задаче");
-        }
+        assertNotNull(retrievedTask, "Задача не должна быть нулевой");
+        assertEquals(task, retrievedTask, "Извлеченная задача должна соответствовать добавленной задаче");
+    }
 
-        @Test
-        public void shouldAddAndRetrieveEpicById() {
+    @Test
+    public void shouldAddAndRetrieveEpicById() {
 
-            Epic epic = new Epic("Epic 1", "Epic Description");
-            taskManager.addEpic(epic);
+        Epic epic = new Epic("Epic 1", "Epic Description");
+        taskManager.addEpic(epic);
 
-            Epic retrievedEpic = taskManager.getEpicById(epic.getId());
+        Epic retrievedEpic = taskManager.getEpicById(epic.getId());
 
-            assertNotNull(retrievedEpic, "Значение эпика не должно быть равным null");
-            assertEquals(epic, retrievedEpic, "Извлеченный эпик должен соответствовать добавленному эпику");
-        }
+        assertNotNull(retrievedEpic, "Значение эпика не должно быть равным null");
+        assertEquals(epic, retrievedEpic, "Извлеченный эпик должен соответствовать добавленному эпику");
+    }
 
-        @Test
-        public void shouldAddAndRetrieveSubTaskById() {
+    @Test
+    public void shouldAddAndRetrieveSubTaskById() {
 
-            Epic epic = new Epic("Epic 1", "Epic Description");
-            taskManager.addEpic(epic);
+        Epic epic = new Epic("Epic 1", "Epic Description");
+        taskManager.addEpic(epic);
 
-            SubTask subTask = new SubTask("Subtask 1", "Subtask Description", epic.getId());
-            taskManager.addSubtask(subTask);
+        SubTask subTask = new SubTask("Subtask 1", "Subtask Description", epic.getId());
+        taskManager.addSubtask(subTask);
 
-            SubTask retrievedSubTask = taskManager.getSubTaskById(subTask.getId());
+        SubTask retrievedSubTask = taskManager.getSubTaskById(subTask.getId());
 
-            assertNotNull(retrievedSubTask, "SubTask не должен быть равен null");
-            assertEquals(subTask, retrievedSubTask, "Полученный SubTask " +
-                    " должен соответствовать добавленному SubTask");
-        }
+        assertNotNull(retrievedSubTask, "SubTask не должен быть равен null");
+        assertEquals(subTask, retrievedSubTask, "Полученный SubTask " +
+                " должен соответствовать добавленному SubTask");
+    }
 
-        @Test
-        public void shouldAddSubTaskToEpicAndUpdateEpicStatus() {
+    @Test
+    public void shouldAddSubTaskToEpicAndUpdateEpicStatus() {
 
-            Epic epic = new Epic("Epic 1", "Epic Description");
-            taskManager.addEpic(epic);
+        Epic epic = new Epic("Epic 1", "Epic Description");
+        taskManager.addEpic(epic);
 
-            SubTask subTask = new SubTask("Subtask 1", "Subtask Description", epic.getId());
-            taskManager.addSubtask(subTask);
+        SubTask subTask = new SubTask("Subtask 1", "Subtask Description", epic.getId());
+        taskManager.addSubtask(subTask);
 
-            List<SubTask> subTasks = taskManager.getSubtaskByEpic(epic);
+        List<SubTask> subTasks = taskManager.getSubtaskByEpic(epic);
 
-            assertNotNull(subTasks, "Список подзадач не должен быть пустым");
-            assertEquals(1, subTasks.size(), "Epic должен содержать одну подзадачу");
-            assertEquals(subTask, subTasks.get(0), "Подзадача должна соответствовать добавленной подзадаче");
-        }
+        assertNotNull(subTasks, "Список подзадач не должен быть пустым");
+        assertEquals(1, subTasks.size(), "Epic должен содержать одну подзадачу");
+        assertEquals(subTask, subTasks.get(0), "Подзадача должна соответствовать добавленной подзадаче");
+    }
 
     @Test
     public void testEpicEqualityBasedOnId() {
@@ -85,7 +85,6 @@ public class InMemoryTaskManagerTest {
         // Проверяем, что эпики равны
         assertEquals(epic1, epic2, "Экземпляры Epic с одинаковым идентификатором должны быть одинаковыми");
     }
-
 
 
     @Test

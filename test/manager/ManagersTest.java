@@ -46,7 +46,7 @@ class ManagersTest {
 
     @Test
     public void taskManagerInstanceShouldBeFunctional() {
-        
+
         TaskManager taskManager = Managers.getDefault();
         Task task = new Task("Task 1", "Description 1");
 
@@ -58,14 +58,14 @@ class ManagersTest {
 
     @Test
     public void historyManagerInstanceShouldBeFunctional() {
-        
+
         HistoryManager historyManager = Managers.getDefaultHistory();
         Task task = new Task("Task 1", "Description 1");
         task.setId(1);
 
         historyManager.add(task);
         var history = historyManager.getHistory();
-        
+
         assertNotNull(history, "history не должна возвращать null");
         assertEquals(1, history.size(), "HistoryManager должен корректно хранить задачи");
         assertEquals(task, history.get(0), "HistoryManager должен возвращать правильную задачу из истории");

@@ -25,7 +25,7 @@ class SubSubTaskTest {
 
     @Test
     void newSubTask() {
-        SubTask subtask = new SubTask("subtask 1","Description",TaskStatus.NEW, 1);
+        SubTask subtask = new SubTask("subtask 1", "Description", TaskStatus.NEW, 1);
         assertEquals("subtask 1", subtask.getTitle(), "Ошибка установки наименования subtask");
         assertEquals("Description", subtask.getDescription(), "Ошибка установки описания subtask");
         assertEquals(TaskStatus.NEW, subtask.getStatus(), "Ошибка установки описания subtask");

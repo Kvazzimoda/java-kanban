@@ -12,23 +12,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class InMemoryHistoryManagerTest {
 
 
-
     //Тестируем, что задачи попадают в историю и при превышении лимита первая удаляется
     @Test
     void getHistory() {
         InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
-        Task task = new Task("TestingHistory_1","TestingHistoryDescription_1", TaskStatus.NEW);
-        Task task2 = new Task("TestingHistory_2","TestingHistoryDescription_2", TaskStatus.NEW);
-        Task task3 = new Task("TestingHistory_3","TestingHistoryDescription_3", TaskStatus.NEW);
-        Task task4 = new Task("TestingHistory_4","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task5 = new Task("TestingHistory_5","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task6 = new Task("TestingHistory_6","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task7 = new Task("TestingHistory_7","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task8 = new Task("TestingHistory_8","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task9 = new Task("TestingHistory_9","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task10 = new Task("TestingHistory_10","TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task11 = new Task("TestingHistory_11","TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task = new Task("TestingHistory_1", "TestingHistoryDescription_1", TaskStatus.NEW);
+        Task task2 = new Task("TestingHistory_2", "TestingHistoryDescription_2", TaskStatus.NEW);
+        Task task3 = new Task("TestingHistory_3", "TestingHistoryDescription_3", TaskStatus.NEW);
+        Task task4 = new Task("TestingHistory_4", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task5 = new Task("TestingHistory_5", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task6 = new Task("TestingHistory_6", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task7 = new Task("TestingHistory_7", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task8 = new Task("TestingHistory_8", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task9 = new Task("TestingHistory_9", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task10 = new Task("TestingHistory_10", "TestingHistoryDescription_4", TaskStatus.NEW);
+        Task task11 = new Task("TestingHistory_11", "TestingHistoryDescription_4", TaskStatus.NEW);
 
         historyManager.add(task);
         historyManager.add(task2);
@@ -57,7 +56,6 @@ class InMemoryHistoryManagerTest {
         assertNotNull(history, "История не пустая.");
         assertArrayEquals(expectedHistory.toArray(), history.toArray());
     }
-
 
 
 }

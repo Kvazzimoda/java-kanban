@@ -5,11 +5,11 @@ import data.Task;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
 
     private final int MAX_SIZE_HISTORY = 10;
 
-    List<Task> history = new LinkedList<>();
+    private final List<Task> history = new LinkedList<>();
 
     @Override
     public void add(Task task) {

@@ -39,7 +39,6 @@ public class Main {
         taskManager.addSubtask(subTask3);
         taskManager.addSubtask(subTask4);
 
-
         System.out.println(taskManager.getSubtasks());
         System.out.println("Epic после добавления SubTask: " + taskManager.getEpics());
 
@@ -49,7 +48,6 @@ public class Main {
                 TaskStatus.DONE, epic1.getId());
         SubTask subTask3Update = new SubTask("Обновление подзадачи 3", "Внесли изменения в подзадачу 3",
                 TaskStatus.DONE, epic2.getId());
-
 
         System.out.println("--------------+++++++++++++++-----------------");
         taskManager.updateTask(task1, task1Update); // обновление задачи
@@ -95,8 +93,6 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getSubtasks());
         System.out.println("============================================");
-
-
 
         taskManager.printAllTasks(taskManager);
 
