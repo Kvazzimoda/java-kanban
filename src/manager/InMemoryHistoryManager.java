@@ -10,8 +10,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node first; // первый элемент списка
     private Node last; // последний элемент списка
 
-   protected static class Node {
-        private Task task;
+    protected static class Node {
+        private final Task task;
         private Node next;
         private Node prev;
 

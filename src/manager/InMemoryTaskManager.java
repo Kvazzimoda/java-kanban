@@ -29,7 +29,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) {
         if (task.getClass() != Task.class) {
-            return ;
+            return;
         }
         int id = generateId();
         task.setId(id);
@@ -233,7 +233,6 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicStatus(epic);
         }
     }
-
 
 
     @Override
