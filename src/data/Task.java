@@ -73,7 +73,7 @@ public class Task {
     }
 
     @Override
-    public String toString() {  // Переопределение метода для адекватной печати имени класса
+    public String toString() { // Переопределение метода для адекватной печати имени класса
         return this.getClass().getSimpleName() +
                 "{title='" + title + '\'' +
                 ", description='" + description + '\'' +
