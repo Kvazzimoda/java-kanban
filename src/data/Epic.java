@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Epic extends Task {
     private final List<Integer> subTaskIds; // теперь храним список идентификаторов задач
-    private int epicId;
+    protected int epicId;
 
     public Epic(String title, String description) {
         super(title, description, TaskStatus.NEW);

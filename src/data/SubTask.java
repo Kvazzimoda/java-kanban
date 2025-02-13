@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class SubTask extends Task {
     private final int epicId; // ID эпика, к которому относится подзадача
-    private int subTaskId;
+    protected int subTaskId;
 
     public SubTask(String title, String description, TaskStatus status, int epicId) {
         super(title, description, status);

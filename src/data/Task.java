@@ -42,11 +42,11 @@ public class Task {
         this.id = id;
     }
 
-    public void setTitle(String title) {// добавлен
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setDescription(String description) { //добавлен
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -54,7 +54,7 @@ public class Task {
         return status;
     }
 
-    public void setStatus(TaskStatus status) { // сеттер на статус был изначально :)
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
@@ -73,7 +73,7 @@ public class Task {
     }
 
     @Override
-    public String toString() { // Переопределение метода для адекватной печати имени класса
+    public String toString() {  // Переопределение метода для адекватной печати имени класса
         return this.getClass().getSimpleName() +
                 "{title='" + title + '\'' +
                 ", description='" + description + '\'' +
