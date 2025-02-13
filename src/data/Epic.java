@@ -17,6 +17,13 @@ public class Epic extends Task {
         return subTaskIds;
     }
 
+    public void setTitle(String title) {
+        if ((title == null) || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Название не может быть пустым или null");
+        }
+        this.title = title;
+    }
+
     public void addSubtaskId(int subTaskId) {
         if (subTaskId == getId()) {
             throw new IllegalArgumentException("Epic не может добавить себя в качестве подзадачи");

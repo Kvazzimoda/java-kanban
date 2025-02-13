@@ -1,7 +1,6 @@
 package manager;
 
 import data.*;
-import data.TaskStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +16,11 @@ class ManagersTest {
     }
 
     @Test
-    public void shouldReturnNonNullHistoryManager() {
+    public void shouldReturnNonNulltaskManager() {
 
         HistoryManager historyManager = Managers.getDefaultHistory();
 
-        assertNotNull(historyManager, "Экземпляр HistoryManager не должен возвращать null");
+        assertNotNull(historyManager, "Экземпляр historyManager не должен возвращать null");
     }
 
     @Test
@@ -35,7 +34,7 @@ class ManagersTest {
     }
 
     @Test
-    public void shouldReturnNewHistoryManagerInstanceEachTime() {
+    public void shouldReturnNewtaskManagerInstanceEachTime() {
 
         HistoryManager firstInstance = Managers.getDefaultHistory();
         HistoryManager secondInstance = Managers.getDefaultHistory();
@@ -53,7 +52,7 @@ class ManagersTest {
         taskManager.addTask(task);
 
         assertEquals(1, taskManager.getTasks().size(), "Диспетчер задач должен корректно хранить задачи");
-        assertEquals(task, taskManager.getTasks().get(0), "Диспетчер задач должен вернуть правильную задачу");
+        assertEquals(task, taskManager.getTasks().getFirst(), "Диспетчер задач должен вернуть правильную задачу");
     }
 
     @Test
@@ -68,6 +67,6 @@ class ManagersTest {
 
         assertNotNull(history, "history не должна возвращать null");
         assertEquals(1, history.size(), "HistoryManager должен корректно хранить задачи");
-        assertEquals(task, history.get(0), "HistoryManager должен возвращать правильную задачу из истории");
+        assertEquals(task, history.getFirst(), "HistoryManager должен возвращать правильную задачу из истории");
     }
 }

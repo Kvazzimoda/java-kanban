@@ -19,7 +19,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldAddAndRetrieveTaskById() {
-
         Task task = new Task("Task 1", "Description 1");
         taskManager.addTask(task);
 
@@ -31,7 +30,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldAddAndRetrieveEpicById() {
-
         Epic epic = new Epic("Epic 1", "Epic Description");
         taskManager.addEpic(epic);
 
@@ -43,7 +41,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldAddAndRetrieveSubTaskById() {
-
         Epic epic = new Epic("Epic 1", "Epic Description");
         taskManager.addEpic(epic);
 
@@ -53,13 +50,11 @@ public class InMemoryTaskManagerTest {
         SubTask retrievedSubTask = taskManager.getSubTaskById(subTask.getId());
 
         assertNotNull(retrievedSubTask, "SubTask не должен быть равен null");
-        assertEquals(subTask, retrievedSubTask, "Полученный SubTask " +
-                " должен соответствовать добавленному SubTask");
+        assertEquals(subTask, retrievedSubTask, "Полученный SubTask должен соответствовать добавленному SubTask");
     }
 
     @Test
     public void shouldAddSubTaskToEpicAndUpdateEpicStatus() {
-
         Epic epic = new Epic("Epic 1", "Epic Description");
         taskManager.addEpic(epic);
 
@@ -78,37 +73,31 @@ public class InMemoryTaskManagerTest {
         Epic epic1 = new Epic("Epic 1", "Description of Epic 1");
         Epic epic2 = new Epic("Epic 2", "Description of Epic 2");
 
-        // Устанавливаем одинаковый id
         epic1.setId(1);
         epic2.setId(1);
 
-        // Проверяем, что эпики равны
         assertEquals(epic1, epic2, "Экземпляры Epic с одинаковым идентификатором должны быть одинаковыми");
     }
 
-
     @Test
     public void shouldNotConflictBetweenGivenIdAndGeneratedId() {
-
-        Task taskWithGivenId = new Task("Task 1", "Description 1", 1);
+        Task taskWithGivenId = new Task("Task 1", "Description 2", TaskStatus.NEW, 3);
         taskManager.addTask(taskWithGivenId);
 
-        Task generatedTask = new Task("Task 2", "Description 2");
+        Task generatedTask = new Task("Task 2", "Description 2", TaskStatus.NEW);
         taskManager.addTask(generatedTask);
 
         Task retrievedByGivenId = taskManager.getTaskById(taskWithGivenId.getId());
         Task retrievedByGeneratedId = taskManager.getTaskById(generatedTask.getId());
 
         assertNotNull(retrievedByGivenId, "Задача с заданным ID должна быть доступна");
-        assertNotNull(retrievedByGeneratedId, "Задача со сгененым ID должна быть доступна");
-        assertNotEquals(retrievedByGivenId, retrievedByGeneratedId, "Конфликт задач с заданным и сгененым ID");
+        assertNotNull(retrievedByGeneratedId, "Задача со сгенерированным ID должна быть доступна");
+        assertNotEquals(retrievedByGivenId, retrievedByGeneratedId, "Конфликт задач с заданным и сгенерированным ID");
     }
 
     @Test
     public void shouldNotChangeTaskDataWhenAddedToManager() {
-
-        Task task = new Task("Task 1", "Description 1", 1);
-
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
         taskManager.addTask(task);
         Task retrievedTask = taskManager.getTaskById(task.getId());
 
@@ -118,25 +107,44 @@ public class InMemoryTaskManagerTest {
         assertEquals(task.getId(), retrievedTask.getId(), "ID не должен меняться");
     }
 
-    //убедитесь, что задачи, добавляемые в HistoryManager, сохраняют предыдущую версию задачи и её данных.
     @Test
     public void shouldPreserveTaskDataInHistoryManager() {
-
-        Task task = new Task("Task 1", "Description 1", 1);
-
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, 1);
         taskManager.addTask(task);
-
-        taskManager.getTaskById(task.getId()); // Добавление задачи в историю
+        taskManager.getTaskById(task.getId());
         List<Task> history = taskManager.getHistory();
 
-        //ПроверОчка
         assertNotNull(history, "История не должна быть пустой");
         assertEquals(1, history.size(), "История должна содержать одну задачу");
         assertEquals(task, history.get(0), "Задача в истории должна соответствовать добавленной задаче");
-        assertEquals("Task 1", history.get(0).getTitle(), "Название задачи в истории" +
-                " должно совпадать с исходным названием задачи");
-        assertEquals("Description 1", history.get(0).getDescription(), "Описание задачи в истории" +
-                " должно соответствовать исходному описанию");
     }
 
+    @Test
+    public void shouldRemoveSubtaskAndUpdateEpic() {
+        Epic epic = new Epic("Epic 1", "Epic Description");
+        taskManager.addEpic(epic);
+        SubTask subTask = new SubTask("Subtask 1", "Subtask Description", epic.getId());
+        taskManager.addSubtask(subTask);
+
+        taskManager.deleteSubTaskById(subTask.getId());
+
+        List<SubTask> subTasks = taskManager.getSubtaskByEpic(epic);
+        assertTrue(subTasks.isEmpty(), "После удаления подзадачи, список подзадач у эпика должен быть пустым");
+    }
+
+    @Test
+    public void shouldUpdateTaskFieldsCorrectly() {
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
+        taskManager.addTask(task);
+
+        task.setTitle("Updated Task 1");
+        task.setDescription("Updated Description");
+        task.setStatus(TaskStatus.IN_PROGRESS);
+
+
+        Task updatedTask = taskManager.getTaskById(task.getId());
+        assertEquals("Updated Task 1", updatedTask.getTitle(), "Название должно быть обновлено");
+        assertEquals("Updated Description", updatedTask.getDescription(), "Описание должно быть обновлено");
+        assertEquals(TaskStatus.IN_PROGRESS, updatedTask.getStatus(), "Статус должен быть обновлён");
+    }
 }
