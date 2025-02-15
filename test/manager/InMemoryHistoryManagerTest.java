@@ -2,60 +2,103 @@ package manager;
 
 import data.Task;
 import data.TaskStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryHistoryManagerTest {
 
+    protected TaskManager taskManager;
+    protected Task task1Test;
+    protected Task task2Test;
+    protected Task task3Test;
 
-    //Тестируем, что задачи попадают в историю и при превышении лимита первая удаляется
+    @BeforeEach
+    void setUp() {
+        taskManager = Managers.getDefault();
+
+        task1Test = new Task("Task 1", "Description 1", TaskStatus.NEW, 0);
+        task2Test = new Task("Task 2", "Description 2", TaskStatus.NEW, 1);
+        task3Test = new Task("Task 3", "Description 3", TaskStatus.NEW, 2);
+    }
+
     @Test
-    void getHistory() {
-        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    void shouldAddTaskToHistory() {
+        taskManager.addTask(task1Test);
+        taskManager.addTask(task2Test);
 
-        Task task = new Task("TestingHistory_1", "TestingHistoryDescription_1", TaskStatus.NEW);
-        Task task2 = new Task("TestingHistory_2", "TestingHistoryDescription_2", TaskStatus.NEW);
-        Task task3 = new Task("TestingHistory_3", "TestingHistoryDescription_3", TaskStatus.NEW);
-        Task task4 = new Task("TestingHistory_4", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task5 = new Task("TestingHistory_5", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task6 = new Task("TestingHistory_6", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task7 = new Task("TestingHistory_7", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task8 = new Task("TestingHistory_8", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task9 = new Task("TestingHistory_9", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task10 = new Task("TestingHistory_10", "TestingHistoryDescription_4", TaskStatus.NEW);
-        Task task11 = new Task("TestingHistory_11", "TestingHistoryDescription_4", TaskStatus.NEW);
+        taskManager.getTaskById(task1Test.getId());
+        taskManager.getTaskById(task2Test.getId());
 
-        historyManager.add(task);
-        historyManager.add(task2);
-        historyManager.add(task3);
-        historyManager.add(task4);
-        historyManager.add(task5);
-        historyManager.add(task6);
-        historyManager.add(task7);
-        historyManager.add(task8);
-        historyManager.add(task9);
-        historyManager.add(task10);
-        historyManager.add(task11);
+        List<Task> history = taskManager.getHistory();
 
-        final List<Task> history = historyManager.getHistory();
-        final List<Task> expectedHistory = new ArrayList<>();
-        expectedHistory.add(task2);
-        expectedHistory.add(task3);
-        expectedHistory.add(task4);
-        expectedHistory.add(task5);
-        expectedHistory.add(task6);
-        expectedHistory.add(task7);
-        expectedHistory.add(task8);
-        expectedHistory.add(task9);
-        expectedHistory.add(task10);
-        expectedHistory.add(task11);
-        assertNotNull(history, "История не пустая.");
-        assertArrayEquals(expectedHistory.toArray(), history.toArray());
+        assertEquals(2, history.size(), "История должна содержать 2 задачи");
+        assertEquals(task1Test, history.get(0), "Первая задача в истории должна быть Task 1");
+        assertEquals(task2Test, history.get(1), "Вторая задача в истории должна быть Task 2");
     }
 
 
+    @Test
+    void shouldRemoveTaskFromHistory() {
+        taskManager.addTask(task1Test);
+        taskManager.addTask(task2Test);
+
+        taskManager.getTaskById(task1Test.getId());
+        taskManager.getTaskById(task2Test.getId());
+
+        taskManager.deleteTaskById(task1Test.getId());
+
+        List<Task> history = taskManager.getHistory();
+
+        assertEquals(1, history.size(), "История должна содержать 1 задачу после удаления");
+        assertEquals(task2Test, history.get(0), "Оставшаяся задача должна быть Task 2");
+    }
+
+    @Test
+    void shouldReturnEmptyHistoryAfterRemovingAllTasks() {
+        taskManager.addTask(task1Test);
+        taskManager.addTask(task2Test);
+
+        taskManager.getTaskById(task1Test.getId());
+        taskManager.getTaskById(task2Test.getId());
+
+        taskManager.deleteTaskById(task1Test.getId());
+        taskManager.deleteTaskById(task2Test.getId());
+
+        List<Task> history = taskManager.getHistory();
+
+        assertTrue(history.isEmpty(), "История должна быть пустой после удаления всех задач");
+    }
+
+    @Test
+    void shouldNotFailWhenRemovingNonExistentTask() {
+        taskManager.addTask(task1Test);
+        taskManager.getTaskById(task1Test.getId());
+        taskManager.deleteTaskById(999); // Удаляем несуществующую задачу
+
+        List<Task> history = taskManager.getHistory();
+
+        assertEquals(1, history.size(), "История должна оставаться неизменной");
+        assertEquals(task1Test, history.get(0), "Задача Task 1 должна остаться в истории");
+    }
+
+    @Test
+    void shouldUpdateTaskPositionWhenReAdded() {
+        taskManager.addTask(task1Test);
+        taskManager.addTask(task2Test);
+
+        taskManager.getTaskById(task1Test.getId());
+        taskManager.getTaskById(task2Test.getId());
+        taskManager.getTaskById(task1Test.getId()); // Повторный вызов
+
+        List<Task> history = taskManager.getHistory();
+
+        assertEquals(2, history.size(), "История должна содержать 2 задачи");
+        assertEquals(task2Test, history.get(0), "Task 2 должна остаться первой");
+        assertEquals(task1Test, history.get(1), "Task 1 должна быть перемещена в конец");
+    }
 }

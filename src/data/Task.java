@@ -3,15 +3,16 @@ package data;
 import java.util.Objects;
 
 public class Task {
-    private String title;
-    private String description;
-    private int id;
-    private TaskStatus status; // исправил модификатор доступа
+    protected String title;
+    protected String description;
+    protected int id;
+    protected TaskStatus status; // исправил модификатор доступа
 
-    public Task(String title, String description, TaskStatus status) {
+    public Task(String title, String description, TaskStatus status, int id) {
         this.title = title;
         this.description = description;
         this.status = status;
+        this.id = id;
     }
 
     public Task(String title, String description) {
@@ -19,10 +20,10 @@ public class Task {
         this.description = description;
     }
 
-    public Task(String title, String description, int id) {
+    public Task(String title, String description, TaskStatus status) {
         this.title = title;
         this.description = description;
-        this.id = id;
+        this.status = status;
     }
 
     public int getId() {
@@ -41,11 +42,11 @@ public class Task {
         this.id = id;
     }
 
-    public void setTitle(String title) {// добавлен
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setDescription(String description) { //добавлен
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -53,7 +54,7 @@ public class Task {
         return status;
     }
 
-    public void setStatus(TaskStatus status) { // сеттер на статус был изначально :)
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
@@ -68,7 +69,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description, status);
+        return Objects.hash(title, description, status, id);
     }
 
     @Override

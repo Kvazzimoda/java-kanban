@@ -1,7 +1,5 @@
 package manager;
 
-import data.*;
-
 public final class Managers {
 
     public static InMemoryTaskManager getDefault() {
