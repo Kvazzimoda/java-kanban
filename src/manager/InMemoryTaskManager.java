@@ -5,17 +5,17 @@ import data.*;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class InMemoryTaskManager implements TaskManager {
     // Хранение задач различных типов
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, SubTask> subtasks = new HashMap<>();
-    private static int counterId = 1;
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, SubTask> subtasks = new HashMap<>();
+    protected static int counterId = 1;
 
     private final HistoryManager historyManager;
-
 
     public InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
@@ -23,6 +23,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     private int generateId() {
         return counterId++;
+    }
+
+    public static void setCounterId(int maxId) {
+        if (maxId >= counterId) {
+            counterId = maxId + 1;
+        }
     }
 
     // Проверяем, что task является экземпляром класса Task
@@ -90,18 +96,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getTasks() {
-        return new ArrayList<>(tasks.values());
+    public Map<Integer, Task> getTasks() {
+        return tasks;
     }
 
     @Override
-    public ArrayList<Epic> getEpics() {
-        return new ArrayList<>(epics.values());
+    public Map<Integer, Epic> getEpics() {
+        return epics;
     }
 
     @Override
-    public ArrayList<SubTask> getSubtasks() {
-        return new ArrayList<>(subtasks.values());
+    public Map<Integer, SubTask> getSubtasks() {
+        return subtasks;
     }
 
     @Override
@@ -234,10 +240,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
     @Override
     public String toString() {
-        return "managementTool.TaskManager{" + '\'' +
+        return "manager.TaskManager{" + '\'' +
                 "Tasks=" + tasks + '\'' +
                 "Epics=" + epics + '\'' +
                 "SubTask=" + subtasks +

@@ -6,11 +6,24 @@ import java.util.Objects;
 
 public class Epic extends Task {
     private final List<Integer> subTaskIds; // теперь храним список идентификаторов задач
-    protected int epicId;
+    protected int id;
 
     public Epic(String title, String description) {
         super(title, description, TaskStatus.NEW);
         this.subTaskIds = new ArrayList<>();
+    }
+
+    public Epic(int id, String name, String description, String status) {
+        super(id, name, description, TaskStatus.valueOf(status));
+        this.subTaskIds = new ArrayList<>();
+    }
+
+    public int getEpicId() {
+        return id;
+    }
+
+    public void setEpicId(int id) {
+        this.id = id;
     }
 
     public List<Integer> getSubTaskIds() {
@@ -44,11 +57,11 @@ public class Epic extends Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Epic epic = (Epic) o;
-        return epicId == epic.epicId;
+        return id == epic.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(epicId);
+        return Objects.hash(id);
     }
 }

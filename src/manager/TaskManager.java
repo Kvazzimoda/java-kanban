@@ -2,8 +2,8 @@ package manager;
 
 import data.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface TaskManager {
     void addTask(Task task);
@@ -12,11 +12,11 @@ public interface TaskManager {
 
     void addSubtask(SubTask subtask);
 
-    ArrayList<Task> getTasks();
+    Map<Integer, Task> getTasks();
 
-    ArrayList<Epic> getEpics();
+    Map<Integer, Epic> getEpics();
 
-    ArrayList<SubTask> getSubtasks();
+    Map<Integer, SubTask> getSubtasks();
 
     void clearTask();
 
