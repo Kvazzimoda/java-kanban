@@ -34,7 +34,7 @@ public class InMemoryTaskManager implements TaskManager {
     // Проверяем, что task является экземпляром класса Task
     @Override
     public void addTask(Task task) {
-        if (task.getClass() != Task.class) {
+        if (task.getType() != TypeTask.TASK) {
             return;
         }
         int id = generateId();
@@ -44,6 +44,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
+        if (epic.getType() != TypeTask.EPIC) {
+            return;
+        }
         int id = generateId();
         epic.setId(id);
         epics.put(id, epic);
@@ -51,6 +54,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addSubtask(SubTask subtask) {
+        if (subtask.getType() != TypeTask.SUBTASK) {
+            return;
+        }
         int id = generateId();
         subtask.setId(id);
         subtasks.put(id, subtask);

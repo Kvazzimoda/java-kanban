@@ -26,6 +26,11 @@ public class SubTask extends Task {
     }
 
     @Override
+    public TypeTask getType() {
+        return TypeTask.SUBTASK; // Для SubTask
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (this == object) return true; // Проверка на ссылочную равность
         if (object == null || getClass() != object.getClass()) return false; // Проверка на тип

@@ -2,7 +2,9 @@ package manager;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import data.*;
 
@@ -38,23 +40,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId()).append(",");
 
-        if (task instanceof SubTask) {
-            sb.append(TypeTask.SUBTASK).append(",");
-        } else if (task instanceof Epic) {
-            sb.append(TypeTask.EPIC).append(",");
-        } else {
-            sb.append(TypeTask.TASK).append(",");
-        }
+        // Используем getType для определения типа
+        TypeTask type = task.getType();
+        sb.append(type).append(",");
 
         sb.append(task.getTitle()).append(",");
         sb.append(task.getStatus()).append(",");
         sb.append(task.getDescription()).append(",");
 
         // Для подзадач — ID эпика, для задач и эпиков — их имя
-        if (task instanceof SubTask subtask) {
-            sb.append(subtask.getEpicId()); // ID эпика для подзадач
+        if (type == TypeTask.SUBTASK) {
+            sb.append(((SubTask) task).getEpicId());
         } else {
-            sb.append(task.getTitle()); // Для задач и эпиков — их имя
+            sb.append(task.getTitle());
         }
 
         return sb.toString();
@@ -116,28 +114,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             System.out.println("Установлен counterId: " + counterId);
 
             // Второй проход: добавляем задачи напрямую в Map с сохранёнными ID
+            Map<Integer, Epic> epics = new HashMap<>();
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i).trim();
                 if (!line.isEmpty()) {
                     Task task = manager.fromString(line);
                     System.out.println("Загружаем задачу: " + task);
-                    if (!(task instanceof Epic || task instanceof SubTask)) {
-                        manager.getTasks().put(task.getId(), task);
-                    } else if (task instanceof Epic epic) {
-                        manager.getEpics().put(epic.getId(), epic);
-                    } else {
-                        SubTask subTask = (SubTask) task;
-                        manager.getSubtasks().put(subTask.getId(), subTask);
-                        // Обновляем список подзадач в эпике
-                        Epic epic = manager.getEpics().get(subTask.getEpicId());
-                        if (epic != null) {
-                            epic.addSubtaskId(subTask.getId());
-                            manager.updateEpicStatus(epic); // Обновляем статус эпика
-                        }
+                    TypeTask type = task.getType(); // Получаем тип задачи через getType()
+
+                    switch (type) {
+                        case TASK:
+                            manager.getTasks().put(task.getId(), task);
+                            break;
+                        case EPIC:
+                            Epic epic = (Epic) task; // Приводим task к Epic
+                            epics.put(epic.getId(), epic); // Добавляем Epic в epics
+                            manager.getEpics().put(epic.getId(), epic); // Добавляем Epic в менеджер
+                            break;
+                        case SUBTASK:
+                            SubTask subTask = (SubTask) task;
+                            manager.getSubtasks().put(subTask.getId(), subTask);
+                            // Обновляем список подзадач в эпике
+                            Epic epicForSubtask = epics.get(subTask.getEpicId());
+                            if (epicForSubtask != null) {
+                                epicForSubtask.addSubtaskId(subTask.getId());
+                                manager.updateEpicStatus(epicForSubtask); // Обновляем статус эпика
+                            }
+                            break;
+                    }
                     }
                 }
-            }
-
             System.out.println("Содержимое файла после загрузки:");
             for (String fileLine : lines) {
                 System.out.println(fileLine);

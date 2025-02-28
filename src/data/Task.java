@@ -38,6 +38,11 @@ public class Task {
         return id;
     }
 
+    // Добавляем метод getType для определения типа задачи
+    public TypeTask getType() {
+        return TypeTask.TASK; // По умолчанию для Task
+    }
+
     public String getTitle() {
         return title;
     }

@@ -26,6 +26,11 @@ public class Epic extends Task {
         this.id = id;
     }
 
+    @Override
+    public TypeTask getType() {
+        return TypeTask.EPIC; // Для Epic
+    }
+
     public List<Integer> getSubTaskIds() {
         return subTaskIds;
     }
