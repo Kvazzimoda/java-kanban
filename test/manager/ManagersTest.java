@@ -52,7 +52,7 @@ class ManagersTest {
         taskManager.addTask(task);
 
         assertEquals(1, taskManager.getTasks().size(), "Диспетчер задач должен корректно хранить задачи");
-        assertEquals(task, taskManager.getTasks().getFirst(), "Диспетчер задач должен вернуть правильную задачу");
+        assertEquals(task, taskManager.getTasks().get(task.getId()), "Диспетчер задач должен вернуть правильную задачу");
     }
 
     @Test

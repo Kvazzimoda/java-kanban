@@ -26,8 +26,21 @@ public class Task {
         this.status = status;
     }
 
+    public Task(int id, String title, String description, TaskStatus status) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
+
+
     public int getId() {
         return id;
+    }
+
+    // Добавляем метод getType для определения типа задачи
+    public TypeTask getType() {
+        return TypeTask.TASK; // По умолчанию для Task
     }
 
     public String getTitle() {

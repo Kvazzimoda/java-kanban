@@ -47,7 +47,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             last = node.prev;
         }
-
         nodeMap.remove(node.task.getId()); // удалили узел из HashMap
     }
 
