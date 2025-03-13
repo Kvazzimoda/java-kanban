@@ -1,20 +1,23 @@
-package data; // имя пакета больше не содержит заглавных букв
+package data;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private final List<Integer> subTaskIds; // теперь храним список идентификаторов задач
+    private final List<Integer> subTaskIds;
+    protected LocalDateTime endTime;
     protected int id;
 
     public Epic(String title, String description) {
-        super(title, description, TaskStatus.NEW);
+        super(title, description, TaskStatus.NEW, null, null); // duration и startTime пока null
         this.subTaskIds = new ArrayList<>();
     }
 
-    public Epic(int id, String name, String description, String status) {
-        super(id, name, description, TaskStatus.valueOf(status));
+    public Epic(int id, String title, String description, TaskStatus status) {
+        super(title, description, status, id, null, null); // duration и startTime пока null
         this.subTaskIds = new ArrayList<>();
     }
 
@@ -28,7 +31,7 @@ public class Epic extends Task {
 
     @Override
     public TypeTask getType() {
-        return TypeTask.EPIC; // Для Epic
+        return TypeTask.EPIC;
     }
 
     public List<Integer> getSubTaskIds() {
@@ -55,6 +58,25 @@ public class Epic extends Task {
 
     public void clearSubTasks() {
         subTaskIds.clear();
+    }
+
+    @Override
+    public Duration getDuration() {
+        return super.getDuration();
+    }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return super.getStartTime();
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        super.setStartTime(startTime);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime != null ? endTime : super.getEndTime();
     }
 
     @Override

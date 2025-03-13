@@ -1,15 +1,19 @@
 package manager;
 
+import data.*;
+
 import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import data.*;
-
+import java.util.Optional;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -18,7 +22,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
     protected void save() {
         try (Writer writer = new FileWriter(file)) {
-            writer.write("id,type,title,status,description,epic\n");
+            writer.write("id,type,title,status,description,duration,startTime,epic\\n");
 
             for (Task task : getTasks().values()) {
                 writer.write(toString(task) + "\n");
@@ -39,27 +43,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private String toString(Task task) {
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId()).append(",");
-
-        // Используем getType для определения типа
-        TypeTask type = task.getType();
-        sb.append(type).append(",");
-
+        sb.append(task.getType()).append(",");
         sb.append(task.getTitle()).append(",");
         sb.append(task.getStatus()).append(",");
         sb.append(task.getDescription()).append(",");
-
-        // Для подзадач — ID эпика, для задач и эпиков — их имя
-        if (type == TypeTask.SUBTASK) {
-            sb.append(((SubTask) task).getEpicId());
-        } else {
-            sb.append(task.getTitle());
+        sb.append(task.getDuration() != null ? task.getDuration().toMinutes() : "").append(",");
+        sb.append(task.getStartTime() != null ? task.getStartTime().format(FORMATTER) : "");
+        if (task.getType() == TypeTask.SUBTASK) {
+            sb.append(",").append(((SubTask) task).getEpicId());
         }
-
         return sb.toString();
     }
 
     private Task fromString(String value) {
-        String[] parts = value.split(",", 6);
+        String[] parts = value.split(",", 8);
         if (parts.length < 5) {
             throw new IllegalArgumentException("Неверный формат строки: " + value);
         }
@@ -69,21 +66,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         String title = parts[2];
         TaskStatus status = TaskStatus.valueOf(parts[3]);
         String description = parts[4];
-        String epicValue = parts.length > 5 ? parts[5].trim() : null; // Числовой ID эпика для подзадач
+        Duration duration = parts[5].isEmpty() ? null : Duration.ofMinutes(Long.parseLong(parts[5]));
+        LocalDateTime startTime = parts[6].isEmpty() ? null : LocalDateTime.parse(parts[6], FORMATTER);
+        String epicValue = parts.length > 7 ? parts[7].trim() : null;
 
         return switch (type) {
-            case TASK -> new Task(id, title, description, status);
-            case EPIC -> new Epic(id, title, description, status.toString());
+            case TASK -> new Task(title, description, status, id, duration, startTime);
+            case EPIC -> new Epic(id, title, description, status);
             case SUBTASK -> {
                 if (epicValue == null || epicValue.isEmpty()) {
                     throw new IllegalArgumentException("Для подзадачи не указан ID эпика: " + value);
                 }
-                int epicId = Integer.parseInt(epicValue); // Преобразуем epicValue в числовой ID эпика
-                Epic epic = getEpics().get(epicId); // Поиск эпика по ID
-                if (epic == null) {
-                    throw new IllegalArgumentException("Эпик с ID " + epicId + " не найден: " + value);
-                }
-                yield new SubTask(id, title, description, status, epicId);
+                int epicId = Integer.parseInt(epicValue);
+                yield new SubTask(id, title, description, status, epicId, duration, startTime);
             }
         };
     }
@@ -125,6 +120,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                     switch (type) {
                         case TASK:
                             manager.getTasks().put(task.getId(), task);
+                            if (task.getStartTime() != null) {
+                                manager.prioritizedTasks.add(task);
+                            }
                             break;
                         case EPIC:
                             Epic epic = (Epic) task; // Приводим task к Epic
@@ -138,15 +136,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                             Epic epicForSubtask = epics.get(subTask.getEpicId());
                             if (epicForSubtask != null) {
                                 epicForSubtask.addSubtaskId(subTask.getId());
-                                manager.updateEpicStatus(epicForSubtask); // Обновляем статус эпика
+                                manager.updateEpicStatus(epicForSubtask);
+                                manager.updateEpicTimeFields(epicForSubtask);
+                            }
+                            if (subTask.getStartTime() != null) {
+                                manager.prioritizedTasks.add(subTask);
                             }
                             break;
                     }
-                    }
                 }
-            System.out.println("Содержимое файла после загрузки:");
-            for (String fileLine : lines) {
-                System.out.println(fileLine);
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при загрузке задач из файла: " + file.getPath(), e);
@@ -178,7 +176,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         save();
     }
 
-
     @Override
     public void clearTask() {
         super.clearTask();
@@ -198,17 +195,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Optional<Task> getTaskById(int id) {
         return super.getTaskById(id);
     }
 
     @Override
-    public Epic getEpicById(int id) {
+    public Optional<Epic> getEpicById(int id) {
         return super.getEpicById(id);
     }
 
     @Override
-    public SubTask getSubTaskById(int id) {
+    public Optional<SubTask> getSubTaskById(int id) {
         return super.getSubTaskById(id);
     }
 
@@ -263,62 +260,83 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             File tempFile = File.createTempFile("tasks", ".csv");
             FileBackedTaskManager manager1 = new FileBackedTaskManager(tempFile);
 
-            // Создаём задачи
-            Task task1 = new Task("Task1", "Description1", TaskStatus.NEW);
-            Task task2 = new Task("Task2", "Description2", TaskStatus.IN_PROGRESS);
+            // Создаём задачи с duration и startTime
+            Task task1 = new Task("Task1", "Description1", TaskStatus.NEW,
+                    Duration.ofMinutes(60), LocalDateTime.of(2025, 3, 11, 8, 0));
+            Task task2 = new Task("Task2", "Description2", TaskStatus.IN_PROGRESS,
+                    Duration.ofMinutes(30), LocalDateTime.of(2025, 3, 12, 9, 30));
             Epic epic1 = new Epic("Epic1", "Epic Description1");
             manager1.addTask(task1);
             manager1.addTask(task2);
-            // Сначала добавляем эпик, чтобы получить его ID
             manager1.addEpic(epic1);
             int epicId = epic1.getId(); // Получаем сгенерированный ID после добавления
 
-            SubTask subtask1 = new SubTask("SubTask1", "SubTask Description1", TaskStatus.DONE, epicId);
-            SubTask subtask2 = new SubTask("SubTask2", "SubTask Description2", TaskStatus.NEW, epicId);
+            SubTask subtask1 = new SubTask("SubTask1", "SubTask Description1", TaskStatus.DONE, epicId,
+                    Duration.ofMinutes(45), LocalDateTime.of(2025, 3, 13, 5, 0));
+            SubTask subtask2 = new SubTask("SubTask2", "SubTask Description2", TaskStatus.NEW, epicId,
+                    Duration.ofMinutes(60), LocalDateTime.of(2025, 3, 14, 10, 0));
 
             // Добавляем задачи и подзадачи
 
             manager1.addSubtask(subtask1);
             manager1.addSubtask(subtask2);
 
-            manager1.deleteTaskById(1);
-
-            Task task3 = new Task("Task3", "newTask3", TaskStatus.NEW);
+            Task task3 = new Task("Task3", "newTask3", TaskStatus.NEW,
+                    Duration.ofMinutes(90), LocalDateTime.of(2025, 3, 12, 12, 0));
             manager1.addTask(task3);
 
+            // Выводим состояние первого менеджера
             System.out.println("Первый менеджер:");
             System.out.println("Tasks: " + manager1.getTasks());
             System.out.println("Epics: " + manager1.getEpics());
             System.out.println("Subtasks: " + manager1.getSubtasks());
-            Epic epicFromManager1 = manager1.getEpics().get(epicId);
-            if (epicFromManager1 != null) {
-                System.out.println("Epic1 subtask IDs: " + epicFromManager1.getSubTaskIds());
+            System.out.println("Prioritized Tasks: " + manager1.getPrioritizedTasks());
+
+            // Используем Optional для получения эпика
+            Optional<Epic> epicFromManager1 = manager1.getEpicById(epicId);
+            if (epicFromManager1.isPresent()) {
+                Epic epic = epicFromManager1.get();
+                System.out.println("Epic1 subtask IDs: " + epic.getSubTaskIds());
+                System.out.println("Epic1 startTime: " + epic.getStartTime());
+                System.out.println("Epic1 duration: " + epic.getDuration());
+                System.out.println("Epic1 endTime: " + epic.getEndTime());
             } else {
                 System.out.println("Эпик не найден в первом менеджере");
             }
 
             FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(tempFile);
 
+            // Выводим состояние второго менеджера
             System.out.println("\nВторой менеджер (загружен из файла):");
             System.out.println("Tasks: " + manager2.getTasks());
             System.out.println("Epics: " + manager2.getEpics());
             System.out.println("Subtasks: " + manager2.getSubtasks());
-            Epic epicFromManager2 = manager2.getEpics().get(epicId);
-            if (epicFromManager2 != null) {
-                System.out.println("Epic1 subtask IDs: " + epicFromManager2.getSubTaskIds());
+            System.out.println("Prioritized Tasks: " + manager2.getPrioritizedTasks());
+
+            Optional<Epic> epicFromManager2 = manager2.getEpicById(epicId);
+            if (epicFromManager2.isPresent()) {
+                Epic epic = epicFromManager2.get();
+                System.out.println("Epic1 subtask IDs: " + epic.getSubTaskIds());
+                System.out.println("Epic1 startTime: " + epic.getStartTime());
+                System.out.println("Epic1 duration: " + epic.getDuration());
+                System.out.println("Epic1 endTime: " + epic.getEndTime());
             } else {
                 System.out.println("Эпик не найден во втором менеджере");
             }
 
+            // Проверки на идентичность
             assert manager1.getTasks().equals(manager2.getTasks()) : "Задачи не совпадают";
             assert manager1.getEpics().equals(manager2.getEpics()) : "Эпики не совпадают";
             assert manager1.getSubtasks().equals(manager2.getSubtasks()) : "Подзадачи не совпадают";
-            assert manager1.getEpics().get(epicId).getSubTaskIds().equals(manager2.getEpics().get(epicId).getSubTaskIds()) :
+            assert manager1.getEpicById(epicId).get().getSubTaskIds()
+                    .equals(manager2.getEpicById(epicId).get().getSubTaskIds()) :
                     "Список ID подзадач эпика не совпадает";
 
             System.out.println("\nВсе проверки пройдены успешно!");
         } catch (IOException e) {
             System.err.println("Ошибка при работе с файлом: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Ошибка валидации: " + e.getMessage());
         }
     }
 
