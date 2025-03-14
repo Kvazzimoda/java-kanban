@@ -32,6 +32,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public boolean intersects(Task task1, Task task2) {
+        if (task1.getStartTime() == null || task1.getEndTime() == null ||
+                task2.getStartTime() == null || task2.getEndTime() == null) {
+            return false;
+        }
+        return task1.getEndTime().isAfter(task2.getStartTime()) &&
+                task1.getStartTime().isBefore(task2.getEndTime());
+    }
+
     // Проверяем, что task является экземпляром класса Task
     @Override
     public void addTask(Task task) {
@@ -40,7 +49,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         int id = generateId();
         task.setId(id);
-        if (task.getStartTime() != null && tasks.values().stream().anyMatch(task::intersects)) {
+        if (task.getStartTime() != null && tasks.values().stream()
+                .anyMatch(existingTask -> intersects(task, existingTask))) {
             throw new IllegalArgumentException("Задача пересекается с другой по времени выполнения");
         }
         tasks.put(id, task);
@@ -70,10 +80,10 @@ public class InMemoryTaskManager implements TaskManager {
             // Используем prioritizedTasks для проверки пересечений
             boolean hasIntersection = prioritizedTasks.stream()
                     .filter(t -> t.getId() != subtask.getId()) // Исключаем саму подзадачу
-                    .anyMatch(t -> t.getStartTime() != null && subtask.intersects(t));
+                    .anyMatch(t -> t.getStartTime() != null && intersects(subtask, t));
             if (hasIntersection) {
                 System.out.println("Конфликт с задачей: " + prioritizedTasks.stream()
-                        .filter(t -> t.getStartTime() != null && subtask.intersects(t))
+                        .filter(t -> t.getStartTime() != null && intersects(subtask, t))
                         .findFirst().orElse(null));
                 throw new IllegalArgumentException("Подзадача пересекается с другой задачей по времени выполнения");
             }
@@ -95,27 +105,58 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void updateEpicTimeFields(Epic epic) {
-        List<SubTask> subTasks = epic.getSubTaskIds().stream() // Получаем список ID подзадач
-                .map(subtasks::get)  // Достаём сами подзадачи из Map
+        Epic storedEpic = epics.get(epic.getId());
+
+        List<SubTask> testSubTasks = storedEpic.getSubTaskIds().stream()
+                .map(subtasks::get)
                 .filter(Objects::nonNull)
-                .filter(t -> t.getStartTime() != null) // Убираем подзадачи без времени
-                .sorted(Comparator.comparing(Task::getStartTime)) // Сортируем по startTime
+                .filter(t -> t.getStartTime() != null && t.getEndTime() != null)
                 .toList();
 
-        if (subTasks.isEmpty()) {
-            epic.setStartTime(null);
-            epic.setEndTime(null);
-            epic.setDuration(null);
+        if (testSubTasks.isEmpty()) {
+            storedEpic.setStartTime(null);
+            storedEpic.setEndTime(null);
+            storedEpic.setDuration(null);
             return;
         }
 
-        LocalDateTime start = subTasks.get(0).getStartTime();
-        LocalDateTime end = subTasks.get(subTasks.size() - 1).getEndTime();
-        Duration duration = Duration.between(start, end);
+        // Инициализируем переменные
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        Duration totalDuration = Duration.ZERO;
 
-        epic.setStartTime(start);
-        epic.setEndTime(end);
-        epic.setDuration(duration);
+        // Один проход по списку подзадач
+        for (SubTask subTask : testSubTasks) {
+            LocalDateTime subStart = subTask.getStartTime();
+            LocalDateTime subEnd = subTask.getEndTime();
+            Duration subDuration = subTask.getDuration();
+
+            // Находим минимальное startTime
+            if (start == null || (subStart != null && subStart.isBefore(start))) {
+                start = subStart;
+            }
+
+            // Находим максимальное endTime
+            if (end == null || (subEnd != null && subEnd.isAfter(end))) {
+                end = subEnd;
+            }
+
+            // Суммируем duration
+            if (subDuration != null) {
+                totalDuration = totalDuration.plus(subDuration);
+            }
+        }
+
+        System.out.println("Обновление эпика " + storedEpic.getTitle() + ": startTime=" + start + ", endTime=" + end + ", duration=" + totalDuration);
+        storedEpic.setStartTime(start);
+        storedEpic.setEndTime(end);
+        storedEpic.setDuration(totalDuration);
+
+        // Синхронизируем prioritizedTasks
+        if (storedEpic.getStartTime() != null) {
+            prioritizedTasks.remove(storedEpic);
+            prioritizedTasks.add(storedEpic);
+        }
     }
 
     @Override
@@ -279,7 +320,7 @@ public class InMemoryTaskManager implements TaskManager {
         newTask.setId(task.getId());
         if (newTask.getStartTime() != null && tasks.values().stream()
                 .filter(t -> t.getId() != task.getId())
-                .anyMatch(task::intersects)) {
+                .anyMatch(t -> intersects(newTask, t))) {
             throw new IllegalArgumentException("Обновлённая задача пересекается с другой по времени выполнения");
         }
         prioritizedTasks.remove(task);
@@ -305,10 +346,10 @@ public class InMemoryTaskManager implements TaskManager {
         newSubTask.setId(subTask.getId());
         if (newSubTask.getStartTime() != null) {
             boolean hasIntersection = tasks.values().stream()
-                    .anyMatch(newSubTask::intersects) ||
+                    .anyMatch(t -> intersects(newSubTask, t)) ||
                     subtasks.values().stream()
                             .filter(s -> s.getId() != newSubTask.getId())
-                            .anyMatch(newSubTask::intersects);
+                            .anyMatch(s -> intersects(newSubTask, s));
             if (hasIntersection) {
                 throw new IllegalArgumentException("Обновлённая подзадача пересекается с другой по времени выполнения");
             }

@@ -14,9 +14,9 @@ public class Main {
 
         // 1. Создание двух задач
         Task task1 = new Task("Задача 1", "Описание 1", TaskStatus.NEW,
-                Duration.ofMinutes(60), LocalDateTime.of(2025, 3, 12, 14, 0));
+                Duration.ofMinutes(60), LocalDateTime.of(2025, 3, 1, 14, 0));
         Task task2 = new Task("Задача 2", "Описание 2", TaskStatus.NEW,
-                Duration.ofMinutes(30), LocalDateTime.of(2025, 3, 12, 11, 30));
+                Duration.ofMinutes(30), LocalDateTime.of(2025, 3, 2, 16, 30));
         taskManager.addTask(task1);
         taskManager.addTask(task2);
 
@@ -29,11 +29,11 @@ public class Main {
 
         // 1. Создание подзадач для первого эпика
         SubTask subTask1 = new SubTask("Подзадача 1", "Описание 1", TaskStatus.NEW, epicWithSubtasks.getId(),
-                Duration.ofMinutes(45), LocalDateTime.of(2025, 3, 12, 9, 15));
+                Duration.ofMinutes(90), LocalDateTime.of(2025, 3, 12, 10, 0));
         SubTask subTask2 = new SubTask("Подзадача 2", "Описание 2", TaskStatus.NEW, epicWithSubtasks.getId(),
-                Duration.ofMinutes(60), LocalDateTime.of(2025, 3, 12, 10, 0));
+                Duration.ofMinutes(60), LocalDateTime.of(2025, 3, 13, 11, 0));
         SubTask subTask3 = new SubTask("Подзадача 3", "Описание 3", TaskStatus.NEW, epicWithoutSubtasks.getId(),
-                Duration.ofMinutes(30), LocalDateTime.of(2025, 3, 13, 10, 0));
+                Duration.ofMinutes(30), LocalDateTime.of(2025, 3, 3, 10, 0));
         taskManager.addSubtask(subTask1);
         taskManager.addSubtask(subTask2);
         taskManager.addSubtask(subTask3);

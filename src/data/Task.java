@@ -83,11 +83,6 @@ public class Task {
         this.status = status;
     }
 
-    public boolean intersects(Task other) {
-        return this.getEndTime().isAfter(other.getStartTime()) &&
-                this.getStartTime().isBefore(other.getEndTime());
-    }
-
     public Duration getDuration() {
         return duration;
     }
