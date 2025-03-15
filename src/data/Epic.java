@@ -72,7 +72,6 @@ public class Epic extends Task {
         super.setStartTime(startTime);
     }
 
-    @Override
     public void setEndTime(LocalDateTime endTime) {
         System.out.println("Установка endTime для эпика " + title + ": " + endTime);
         this.endTime = endTime;
@@ -80,7 +79,7 @@ public class Epic extends Task {
 
     @Override
     public LocalDateTime getEndTime() {
-        return endTime != null ? endTime : super.getEndTime();
+        return endTime;
     }
 
     @Override

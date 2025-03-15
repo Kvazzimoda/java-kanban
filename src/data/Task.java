@@ -99,10 +99,6 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) { // Новый публичный сеттер
-        this.startTime = endTime != null ? endTime.minus(duration != null ? duration : Duration.ZERO) : null;
-    }
-
     // Новый метод для вычисления времени завершения задачи
     public LocalDateTime getEndTime() {
         if (startTime == null || duration == null) {
