@@ -2,6 +2,7 @@ package manager;
 
 import data.*;
 
+import java.util.Optional;
 import java.util.List;
 import java.util.Map;
 
@@ -24,11 +25,11 @@ public interface TaskManager {
 
     void deleteEpic();
 
-    Task getTaskById(int id);
+    Optional<Task> getTaskById(int id);
 
-    Epic getEpicById(int id);
+    Optional<Epic> getEpicById(int id);
 
-    SubTask getSubTaskById(int id);
+    Optional<SubTask> getSubTaskById(int id);
 
     void deleteTaskById(int id);
 
@@ -47,5 +48,7 @@ public interface TaskManager {
     void updateEpicStatus(Epic epic);
 
     List<Task> getHistory();
+
+    List<Task> getPrioritizedTasks();
 
 }

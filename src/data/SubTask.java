@@ -1,23 +1,31 @@
 package data;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SubTask extends Task {
-    private final int epicId; // ID эпика, к которому относится подзадача
+    private int epicId;
     protected int subTaskId;
 
-    public SubTask(String title, String description, TaskStatus status, int epicId) {
-        super(title, description, status);
+    public SubTask(String title, String description, TaskStatus status, int epicId,
+                   Duration duration, LocalDateTime startTime) {
+        super(title, description, status, duration, startTime);
         this.epicId = epicId;
     }
 
-    public SubTask(int id, String title, String description, TaskStatus status, int epicId) {
-        super(id, title, description, status);
+    public SubTask(int id, String title, String description, TaskStatus status, int epicId,
+                   Duration duration, LocalDateTime startTime) {
+        super(title, description, status, id, duration, startTime);
         this.epicId = epicId;
     }
 
     public SubTask(String title, String description, int epicId) {
         super(title, description);
+        this.epicId = epicId;
+    }
+
+    public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
 
@@ -35,11 +43,11 @@ public class SubTask extends Task {
         if (this == object) return true; // Проверка на ссылочную равность
         if (object == null || getClass() != object.getClass()) return false; // Проверка на тип
         SubTask subTask = (SubTask) object;
-        return subTaskId == subTask.subTaskId; // Сравнение только по id
+        return subTaskId == subTask.subTaskId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subTaskId); // Хэш-код основан только на id
+        return Objects.hash(subTaskId);
     }
 }
