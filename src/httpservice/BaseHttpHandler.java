@@ -1,4 +1,4 @@
-package httpService;
+package httpservice;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
