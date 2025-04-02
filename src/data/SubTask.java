@@ -43,7 +43,7 @@ public class SubTask extends Task {
         if (this == object) return true; // Проверка на ссылочную равность
         if (object == null || getClass() != object.getClass()) return false; // Проверка на тип
         SubTask subTask = (SubTask) object;
-        return subTaskId == subTask.subTaskId;
+        return id == subTask.id && epicId == subTask.epicId;
     }
 
     @Override

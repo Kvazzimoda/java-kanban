@@ -74,6 +74,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getType() != TypeTask.SUBTASK) {
             return;
         }
+        if (!epics.containsKey(subtask.getEpicId())) {
+            throw new IllegalArgumentException("Epic with ID " + subtask.getEpicId() + " not found");
+        }
         int id = generateId();
         subtask.setId(id);
         if (subtask.getStartTime() != null) {
@@ -110,8 +113,10 @@ public class InMemoryTaskManager implements TaskManager {
         List<SubTask> testSubTasks = storedEpic.getSubTaskIds().stream()
                 .map(subtasks::get)
                 .filter(Objects::nonNull)
-                .filter(t -> t.getStartTime() != null && t.getEndTime() != null)
+                .filter(t -> t.getStartTime() != null)
                 .toList();
+
+        prioritizedTasks.remove(storedEpic);
 
         if (testSubTasks.isEmpty()) {
             storedEpic.setStartTime(null);
@@ -154,7 +159,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         // Синхронизируем prioritizedTasks
         if (storedEpic.getStartTime() != null) {
-            prioritizedTasks.remove(storedEpic);
             prioritizedTasks.add(storedEpic);
         }
     }
@@ -208,6 +212,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void clearTask() {
         tasks.clear();
         prioritizedTasks.removeIf(t -> t.getType() == TypeTask.TASK);
+
     }
 
     @Override
@@ -279,10 +284,14 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(id);
         if (epic != null) {
             for (int subTaskId : epic.getSubTaskIds()) {
+                SubTask subTask = subtasks.get(subTaskId);
                 subtasks.remove(subTaskId);
-                prioritizedTasks.removeIf(t -> t.getId() == subTaskId);
+                if (subTask != null) {
+                    prioritizedTasks.remove(subTask); // Удаляем подзадачу из prioritizedTasks
+                }
                 historyManager.remove(subTaskId);
             }
+            prioritizedTasks.remove(epic);
             epics.remove(id);
             historyManager.remove(id);
         }

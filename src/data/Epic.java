@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private final List<Integer> subTaskIds;
+    private List<Integer> subTaskIds;
     protected LocalDateTime endTime;
-    protected int id;
 
     public Epic(String title, String description) {
         super(title, description, TaskStatus.NEW, null, null); // duration и startTime пока null
@@ -21,20 +20,15 @@ public class Epic extends Task {
         this.subTaskIds = new ArrayList<>();
     }
 
-    public int getEpicId() {
-        return id;
-    }
-
-    public void setEpicId(int id) {
-        this.id = id;
-    }
-
     @Override
     public TypeTask getType() {
         return TypeTask.EPIC;
     }
 
     public List<Integer> getSubTaskIds() {
+        if (subTaskIds == null) {
+            subTaskIds = new ArrayList<>();
+        }
         return subTaskIds;
     }
 
@@ -49,7 +43,7 @@ public class Epic extends Task {
         if (subTaskId == getId()) {
             throw new IllegalArgumentException("Epic не может добавить себя в качестве подзадачи");
         }
-        subTaskIds.add(subTaskId);
+        getSubTaskIds().add(subTaskId);
     }
 
     public void removeSubTaskId(int subTaskId) {
