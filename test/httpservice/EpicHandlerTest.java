@@ -68,9 +68,9 @@ public class EpicHandlerTest {
 
         assertEquals(201, response.statusCode());
         assertTrue(response.body().contains("\"message\": \"Epic created\""));
-        assertTrue(response.body().contains("\"id\": 1"));
+        assertTrue(response.body().contains("\"id\": 91"));
 
-        Epic epic = taskManager.getEpicById(1).orElse(null);
+        Epic epic = taskManager.getEpicById(91).orElse(null);
         assertNotNull(epic);
         assertEquals("Epic 1", epic.getTitle());
         assertEquals("Epic Description 1", epic.getDescription());
