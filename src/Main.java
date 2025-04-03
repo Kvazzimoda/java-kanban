@@ -6,7 +6,6 @@ import manager.TaskManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public class Main {
     public static void main(String[] args) {
@@ -39,17 +38,18 @@ public class Main {
         taskManager.addSubtask(subTask3);
 
         // 2. Запрос созданных задач в разном порядке
-        Optional<Task> optTask1 = taskManager.getTaskById(task1.getId());
-        Optional<Epic> optEpicWithSubtasks = taskManager.getEpicById(epicWithSubtasks.getId());
-        Optional<SubTask> optSubTask3 = taskManager.getSubTaskById(subTask3.getId());
-        Optional<Task> optTask2 = taskManager.getTaskById(task2.getId());
-        Optional<SubTask> optSubTask2 = taskManager.getSubTaskById(subTask2.getId());
-        Optional<SubTask> optSubTask1 = taskManager.getSubTaskById(subTask1.getId());
-        Optional<Epic> optEpicWithoutSubtasks = taskManager.getEpicById(epicWithoutSubtasks.getId());
 
-        // 3. Вызов задач по приоритету
+
+        System.out.println("Вызов задач по приоритету");
         System.out.println(taskManager.getPrioritizedTasks());
 
+        /* System.out.println("Удаляем subtaskи ");
+        taskManager.deleteSubTaskById(subTask1.getId());
+
+*/
+        System.out.println("Удаляем epic");
+        taskManager.deleteEpicById(epicWithSubtasks.getId());
+        System.out.println(taskManager.getPrioritizedTasks());
         // 4. Вывод истории просмотров
         printHistory(taskManager);
 

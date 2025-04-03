@@ -21,7 +21,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
     @BeforeEach
     void setUp() {
         super.setUp();
-        InMemoryTaskManager.setCounterId(0); // Сброс счётчика ID перед каждым тестом
+         InMemoryTaskManager.setCounterId(0); // Сброс счётчика ID перед каждым тестом
     }
 
     // Тесты для расчёта статуса Epic

@@ -47,6 +47,9 @@ public class Task {
         this.status = status;
     }
 
+    public Task() {
+    }
+
     public int getId() {
         return id;
     }
@@ -64,7 +67,9 @@ public class Task {
     }
 
     public void setId(int id) {
+        System.out.println("Setting ID to: " + id + " in " + this.getClass().getSimpleName());
         this.id = id;
+        System.out.println("ID after set: " + this.id);
     }
 
     public void setTitle(String title) {
@@ -105,6 +110,64 @@ public class Task {
             return null;
         }
         return startTime.plus(duration);
+    }
+
+
+    public int compareTo(Task other) {
+        // Сначала сравниваем startTime
+        if (this.startTime == null && other.startTime == null) {
+            // Если startTime у обоих null, сравниваем по id
+            return Integer.compare(this.id, other.id);
+        }
+        if (this.startTime == null) {
+            return 1;
+        }
+        if (other.startTime == null) {
+            return -1;
+        }
+        int startTimeComparison = this.startTime.compareTo(other.startTime);
+        if (startTimeComparison != 0) {
+            return startTimeComparison;
+        }
+
+        // Если startTime равны, сравниваем по id
+        int idComparison = Integer.compare(this.id, other.id);
+        if (idComparison != 0) {
+            return idComparison;
+        }
+
+        // Если id равны, сравниваем по title
+        if (this.title == null && other.title == null) {
+            return 0;
+        }
+        if (this.title == null) {
+            return 1;
+        }
+        if (other.title == null) {
+            return -1;
+        }
+        int titleComparison = this.title.compareTo(other.title);
+        if (titleComparison != 0) {
+            return titleComparison;
+        }
+
+        // Если title равны, сравниваем по description
+        if (this.description == null && other.description == null) {
+            return 0;
+        }
+        if (this.description == null) {
+            return 1;
+        }
+        if (other.description == null) {
+            return -1;
+        }
+        int descriptionComparison = this.description.compareTo(other.description);
+        if (descriptionComparison != 0) {
+            return descriptionComparison;
+        }
+
+        // Если description равны, сравниваем по status
+        return this.status.compareTo(other.status);
     }
 
     @Override

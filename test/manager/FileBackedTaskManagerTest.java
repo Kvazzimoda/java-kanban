@@ -27,7 +27,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @BeforeEach
     void setUp() {
         super.setUp();
-        InMemoryTaskManager.setCounterId(0); // Сброс счётчика ID
+        // InMemoryTaskManager.setCounterId(0); // Сброс счётчика ID
     }
 
     @Test
